@@ -1,4 +1,5 @@
 from sense_hat import SenseHat
+import time
 
 
 class PiWorld:
@@ -17,37 +18,39 @@ class PiWorld:
 
     def create(self):
         for i in range(0,self.w):
-            self.world.append(True)
+            self.world.append(i % 2 == 3)
+        self.draw()
 
     def iterate(self, iterations):
+        time.sleep(0.5)
         for i in range(0, iterations):
-            self.update()
-            print("World " + str(i) + " " + str(self.world))
-
-    def update(self):
-        for i in range(0,self.w):
-            self.updateCell(i)
+            
+            newworld = [self.updateCell(j) for j in range(0,self.w)]
+            self.draw()
+            #print("World " + str(i) + " " + str(self.world))
 
     def updateCell(self, cell):
         neighbours = self.getNeighbours(cell)
-        self.world[cell] = self.updateState(neighbours)
+        self.world[cell] = self.updateState(cell, neighbours)
                 
     def getNeighbours(self, cell):
-        #n1 = self.world[cell-9]
-        #n2 = self.world[cell-8]
-        #n3 = self.world[cell-7]
-        #n4 = self.world[cell-1]
-        #n5 = self.world[cell+1]
-        #n6 = self.world[cell+7]
-        #n7 = self.world[cell+8]
-        #n8 = self.world[cell+9]
-        #return ([n1,n2,n3,n4,n5,n6,n7,n8])
-        return []
+        neighbours_offset = [-9,-8,-7,-1,1,7,8,9]
+        neighbours_offset = [cell+i for i in neighbours_offset]
+        neighbours = []
+        for i in neighbours_offset:
+            if i < 0 or i > self.w:
+                neighbours.append(True)
+            else:
+                neighbours.append(self.world[i])
+        #print(str(cell), str(neighbours_offset), str(neighbours) )   
+        return neighbours
 
-    def updateState(self, neighbours):
-        return False
+    def updateState(self, cell, neighbours):
+        return not(self.world[cell])
     
-
+    def draw(self):
+        pixels = [[255,255,255]if i else [0,0,0] for i in self.world]
+        self.sense.set_pixels(pixels)
 
 
 pworld = PiWorld()
