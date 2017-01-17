@@ -96,7 +96,7 @@ class PiWorld:
 
 pworld = PiWorld()
 #pworld.hattest()
-pworld.create("blinker")
+pworld.create("glider")
 pworld.iterate(10)
 print("finished")
         
